@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-        <listEntry value="/VTS_ue1/src/ue1/FileCopyMultiThreaded.java"/>
+        <listEntry value="/VTS_ue1/src/ue1/a11/FileCopyMultiThreaded.java"/>
     </listAttribute>
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
         <listEntry value="1"/>
@@ -13,7 +13,7 @@
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_EXCLUDE_TEST_CODE" value="true"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
-    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ue1.FileCopyMultiThreaded"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ue1.a11.FileCopyMultiThreaded"/>
     <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="VTS_ue1"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="C:\vts_test\1\sample.txt C:\vts_test\2\sample.txt"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="VTS_ue1"/>
