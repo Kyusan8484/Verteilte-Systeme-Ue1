@@ -25,37 +25,30 @@ public class FileCopyMultiThreaded {
 		final PipedInputStream writingPipedStream = new PipedInputStream(readingPipedStream);
 		
 		// reading thread
-		Thread readingThread = new Thread(new Runnable() {
-			@Override
-            public void run() {
-				try (InputStream fis = Files.newInputStream(sourcePath)) {
-					final byte[] buffer = new byte[0x10000];
-					for (int bytesRead = fis.read(buffer); bytesRead != -1; bytesRead = fis.read(buffer)) {
-						readingPipedStream.write(buffer, 0, bytesRead);
-					}
-					readingPipedStream.close();
-				} catch(IOException ioe) {
-					System.out.println(ioe);
+		Thread readingThread = new Thread(() -> {
+			try (InputStream fis = Files.newInputStream(sourcePath)) {
+				final byte[] buffer = new byte[0x10000];
+				for (int bytesRead = fis.read(buffer); bytesRead != -1; bytesRead = fis.read(buffer)) {
+					readingPipedStream.write(buffer, 0, bytesRead);
 				}
+				readingPipedStream.close();
+			} catch(IOException ioe) {
+				System.out.println(ioe);
 			}
 		});
 
 		// writing thread
-		Thread writingThread = new Thread(new Runnable() {
-			@Override
-            public void run() {
-				try (OutputStream fos = Files.newOutputStream(sinkPath)) {
-					final byte[] buffer = new byte[0x10000];
-					for (int bytesRead = writingPipedStream.read(buffer); 
-							bytesRead != -1; bytesRead = writingPipedStream.read(buffer)) {
-						
-						fos.write(buffer, 0, bytesRead);
-					}
-					writingPipedStream.close();	
-				} catch(IOException ioe) {
-					System.out.println("write");
-					System.out.println(ioe);
+		Thread writingThread = new Thread(() -> {
+			try (OutputStream fos = Files.newOutputStream(sinkPath)) {
+				final byte[] buffer = new byte[0x10000];
+				for (int bytesRead = writingPipedStream.read(buffer); 
+						bytesRead != -1; bytesRead = writingPipedStream.read(buffer)) {
+					
+					fos.write(buffer, 0, bytesRead);
 				}
+				writingPipedStream.close();	
+			} catch(IOException ioe) {
+				System.out.println(ioe);
 			}
 		});
 

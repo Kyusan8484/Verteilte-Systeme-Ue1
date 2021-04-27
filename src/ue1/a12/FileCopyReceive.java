@@ -17,8 +17,6 @@ public class FileCopyReceive {
 
 		final String ipAndPortAsString = args[1];
 		
-		// if(ipAndPortAsString.contains(":")) throw new IllegalArgumentException(ipAndPortAsString);		
-		
 		String ip;
 		int port;
 		
