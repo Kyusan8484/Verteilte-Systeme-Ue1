@@ -8,7 +8,8 @@ import java.nio.file.Paths;
 public class UebungUtils {
 
 	public static void main(String[] args) {
-		System.out.println(System.getProperty("java.version"));		
+		System.out.println("Java Version: " + System.getProperty("java.version"));		
+		System.out.println("Available Processors: " + Runtime.getRuntime().availableProcessors());
 		
 		if(args.length == 0) {
 			System.out.println("no command");
