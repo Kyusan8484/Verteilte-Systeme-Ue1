@@ -8,37 +8,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public final class VectorMathMultiThreaded {
-	
-	private static final class VectorAddCallable implements Callable<Long> {
-		private final double[] result;
-		private final double[] left;
-		private final double[] right;
-		private int start;
-
-		private VectorAddCallable(double[] result, double[] left, double[] right, int start) {
-			this.result = result;
-			this.left = left;
-			this.right = right;
-			if(start >= PROCESSOR_COUNT) throw new RuntimeException();
-			this.start = start;
-		}
-
-		@Override
-		public Long call() throws Exception {
-			final long startTime = System.currentTimeMillis();
-			if(left.length < start) return System.currentTimeMillis() - startTime;
-			for (int x = start; x < left.length; x=x+4) {					
-				result[x] = left[x] + right[x];
-			}
-			return System.currentTimeMillis() - startTime;
-		}
-	}
-
 
 	static private final int DEFAULT_SIZE = 100;
 	static private final int WARMUP_LOOPS = 25000;
 	
-	static private final int PROCESSOR_COUNT = 4;
+	static public final int PROCESSOR_COUNT = 4;
 	static final ExecutorService THREAD_POOL = Executors.newFixedThreadPool(PROCESSOR_COUNT);
 	
 	/**
@@ -57,17 +31,34 @@ public final class VectorMathMultiThreaded {
 		for(int i = 0; i < PROCESSOR_COUNT; i++) {
 			futures[i] = THREAD_POOL.submit(new VectorAddCallable(result, left, right, i));
 		}
-		
-		// IO slows down too much
-		// System.out.format("Main-Thread: Waiting for child threads to finish!\n");
-		
+		handleFutures(futures);
+		return result;
+	}
+	/**
+	 * Multiplexes two vectors within a single thread.
+	 * @param left the first operand
+	 * @param right the second operand
+	 * @return the resulting matrix
+	 * @throws NullPointerException if one of the given parameters is {@code null}
+	 */
+	static public double[][] mux (final double[] left, final double[] right) {
+		final double[][] result = new double[left.length][right.length];
+
+		final Future<Long>[] futures = new Future[PROCESSOR_COUNT];
+		for(int i = 0; i < PROCESSOR_COUNT; i++) {
+			futures[i] = THREAD_POOL.submit(new VectorMuxCallable(result, left, right, i));
+		}
+		handleFutures(futures);
+		return result;
+	}
+
+	private static void handleFutures(Future<Long>[] futures) {
 		try {
 			for (final Future<Long> future : futures) {
 				try {
 					final long timestamp = getUninterruptibly(future);
-					// System.out.format("child thread ended after %.2fs\n", timestamp * 0.001);
 				} catch (final ExecutionException exception) {
-					final Throwable cause = exception.getCause();	// manual precise rethrow for cause!
+					final Throwable cause = exception.getCause();    // manual precise rethrow for cause!
 					if (cause instanceof Error) throw (Error) cause;
 					if (cause instanceof RuntimeException) throw (RuntimeException) cause;
 					throw new AssertionError();
@@ -78,27 +69,6 @@ public final class VectorMathMultiThreaded {
 				future.cancel(true);
 			}
 		}
-
-		// System.out.format("Main-Thread: All child threads are done!\n");
-		return result;
-	}
-
-
-	/**
-	 * Multiplexes two vectors within a single thread.
-	 * @param left the first operand
-	 * @param right the second operand
-	 * @return the resulting matrix
-	 * @throws NullPointerException if one of the given parameters is {@code null}
-	 */
-	static public double[][] mux (final double[] left, final double[] right) {
-		final double[][] result = new double[left.length][right.length];
-		for (int x = 0; x < left.length; ++x) {
-			for (int rightIndex = 0; rightIndex < right.length; ++rightIndex) {
-				result[x][rightIndex] = left[x] * right[rightIndex];
-			}
-		}
-		return result;
 	}
 
 
